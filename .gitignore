@@ -1,0 +1,31 @@
+# Docker Compose 用の環境変数ファイル (パスワードなどを含むため)
+.env
+
+# macOS システムファイル
+.DS_Store
+
+# --- Laravel 関連 (src/ ディレクトリ以下が対象) ---
+# ベンダーライブラリ (Composerでインストールされる)
+/src/vendor/
+# Node.js モジュール (npm/yarnでインストールされる)
+/src/node_modules/
+# Laravel 用の環境変数ファイル (これもパスワード等を含む)
+/src/.env
+# ログファイル
+/src/storage/logs/*.log
+# セッションファイル
+/src/storage/framework/sessions/*
+# コンパイルされたビューファイル
+/src/storage/framework/views/*
+# キャッシュファイル
+/src/storage/framework/cache/data/*
+# シンボリックリンクされたストレージディレクトリ (public/storage)
+/src/public/storage
+# Laravel Mix/Vite のホットリロード用ファイル
+/src/public/hot
+# Laravel Mix/Vite のビルド成果物 (npm run buildで生成される)
+/src/public/build/
+
+# --- IDE/エディタ設定ファイル (必要に応じて) ---
+.vscode/
+.idea/

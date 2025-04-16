@@ -1,0 +1,68 @@
+services:
+  # PHP-FPM サービス (アプリケーションサーバー)
+  php:
+    build:
+      context: ./docker/php # Dockerfileがあるディレクトリへのパス
+      dockerfile: Dockerfile # Dockerfileの名前
+    container_name: myapp_php # 分かりやすいコンテナ名 (任意)
+    volumes:
+      # ホストの ./src ディレクトリをコンテナ内の /var/www/html にマウント
+      # これでホストで編集したコードがコンテナに即時反映される
+      - ./src:/var/www/html
+    working_dir: /var/www/html # コンテナ内でのコマンド実行時のデフォルトディレクトリ
+    networks:
+      - app-network # 下で定義するカスタムネットワークに接続
+
+  # Nginx サービス (Webサーバー)
+  nginx:
+    build:
+      context: ./docker/nginx
+      dockerfile: Dockerfile
+    container_name: myapp_nginx
+    ports:
+      # ホストのポート : コンテナのポート
+      # ${APP_PORT:-80} は、.envファイルにAPP_PORTがあればその値を、なければ80を使う
+      - "${APP_PORT:-80}:80"
+    volumes:
+      # NginxもPHPと同じアプリケーションコードを参照する必要がある
+      - ./src:/var/www/html
+    depends_on:
+      # phpサービスが起動してからnginxを起動する
+      - php
+    networks:
+      - app-network
+
+  # MySQL サービス (データベース)
+  db:
+    # image: MySQLの最新安定版を指定 (例: 8.4)
+    # 'latest'は意図しない破壊的変更を含む可能性があるためバージョン指定を推奨
+    image: mysql:8.4
+    container_name: myapp_db
+    restart: always # コンテナが落ちても自動で再起動する設定 (開発中は無くてもOK)
+    environment:
+      # 環境変数でMySQLの設定を行う
+      # 値は `.env` ファイルから読み込むか、なければ : の右側のデフォルト値を使う
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-secret_root} # ルートユーザーのパスワード
+      MYSQL_DATABASE: ${DB_DATABASE:-myapp_db}              # 作成するデータベース名
+      MYSQL_USER: ${DB_USERNAME:-user}                    # 作成するユーザー名
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}                # 作成するユーザーのパスワード
+    volumes:
+      # 名前付きボリューム 'db-data' をMySQLのデータディレクトリにマウント
+      # これでコンテナを削除してもデータが保持される
+      - db-data:/var/lib/mysql
+    ports:
+      # ホストからMySQLに接続したい場合 (例: DBクライアントツール) 用
+      # ${DB_PORT:-3306} は、.envにDB_PORTがあればその値を、なければ3306を使う
+      - "${DB_PORT:-3306}:3306"
+    networks:
+      - app-network
+
+# 名前付きボリュームの定義 (dbサービスのデータを永続化するため)
+volumes:
+  db-data:
+    driver: local # Dockerホストのローカルファイルシステム上に作成される
+
+# カスタムブリッジネットワークの定義 (サービス間通信のため)
+networks:
+  app-network:
+    driver: bridge # デフォルトのブリッジネットワークドライバを使用
