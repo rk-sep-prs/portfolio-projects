@@ -11,7 +11,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+                // ★ ここでインターフェースと具象クラスを結びつける（バインドする）
+                $this->app->bind(
+                    BookLogRepositoryInterface::class,
+                    EloquentBookLogRepository::class
+                );
     }
 
     /**
