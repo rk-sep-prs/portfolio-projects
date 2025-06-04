@@ -25,11 +25,7 @@ class ListBookLogsUseCase
     public function execute(): Collection
     {
         // ★ リポジトリインターフェースのメソッドを呼び出してデータを取得
-        $bookLogs = $this->bookLogRepository->findAll();
-
-        // 取得したデータをそのまま返す (今はシンプルに)
-        // 本来は、ここでプレゼンテーション層向けの Output DTO に詰め替えることも多い
-        return $bookLogs;
+        return $this->bookLogRepository->findAll();
     }
 
     // __invoke メソッドを使えば、クラスインスタンスを関数のように呼び出せる

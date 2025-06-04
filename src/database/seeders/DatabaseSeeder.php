@@ -19,5 +19,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        // BookLogの初期データを追加
+        $this->call(BookLogSeeder::class);
     }
 }

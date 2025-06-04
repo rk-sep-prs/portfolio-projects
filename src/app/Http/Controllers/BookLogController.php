@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request; // Requestクラスは今回は使わないが、基本書式として入れておく
-use Illuminate\View\View; // Viewの型ヒント用
-use App\Application\UseCases\BookLog\ListBookLogsUseCase; // 作成したUseCaseをuse
+use Illuminate\Http\Request;
+use Illuminate\View\View;
+use App\Application\UseCases\BookLog\ListBookLogsUseCase;
 
 class BookLogController extends Controller
 {
