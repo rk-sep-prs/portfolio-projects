@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\BookLogController; // 作成したControllerをuse
+use App\Presentation\Http\Controllers\BookLogController; // 作成したControllerをuse
 
 /*
 |--------------------------------------------------------------------------

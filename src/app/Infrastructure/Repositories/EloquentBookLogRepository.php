@@ -6,7 +6,7 @@ namespace App\Infrastructure\Repositories;
 
 use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog as BookLogEntity;  // エンティティに as を付ける
-use App\Models\BookLog as BookLogModel;  // モデルに明確なエイリアスを指定
+use App\Infrastructure\Persistence\Eloquent\BookLog as BookLogModel;  // モデルに明確なエイリアスを指定
 use Illuminate\Support\Collection;
 
 class EloquentBookLogRepository implements BookLogRepositoryInterface
