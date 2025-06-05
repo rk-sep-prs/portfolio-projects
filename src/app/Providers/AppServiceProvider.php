@@ -18,6 +18,49 @@ class AppServiceProvider extends ServiceProvider
             BookLogRepositoryInterface::class,
             EloquentBookLogRepository::class
         );
+
+        // CQRS Query classes
+        $this->app->bind(
+            \App\Application\Queries\BookLog\ListBookLogsQuery::class,
+            \App\Application\Queries\BookLog\ListBookLogsQuery::class
+        );
+        
+        $this->app->bind(
+            \App\Application\Queries\BookLog\FindBookLogByIdQuery::class,
+            \App\Application\Queries\BookLog\FindBookLogByIdQuery::class
+        );
+
+        // CQRS Command classes
+        $this->app->bind(
+            \App\Application\Commands\BookLog\CreateBookLogCommand::class,
+            \App\Application\Commands\BookLog\CreateBookLogCommand::class
+        );
+        
+        $this->app->bind(
+            \App\Application\Commands\BookLog\UpdateBookLogCommand::class,
+            \App\Application\Commands\BookLog\UpdateBookLogCommand::class
+        );
+
+        // Interactor classes (UseCase implementations)
+        $this->app->bind(
+            \App\Application\Interactors\BookLog\ListBookLogsInteractor::class,
+            \App\Application\Interactors\BookLog\ListBookLogsInteractor::class
+        );
+        
+        $this->app->bind(
+            \App\Application\Interactors\BookLog\FindBookLogByIdInteractor::class,
+            \App\Application\Interactors\BookLog\FindBookLogByIdInteractor::class
+        );
+        
+        $this->app->bind(
+            \App\Application\Interactors\BookLog\CreateBookLogInteractor::class,
+            \App\Application\Interactors\BookLog\CreateBookLogInteractor::class
+        );
+        
+        $this->app->bind(
+            \App\Application\Interactors\BookLog\UpdateBookLogInteractor::class,
+            \App\Application\Interactors\BookLog\UpdateBookLogInteractor::class
+        );
     }
 
     /**

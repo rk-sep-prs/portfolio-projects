@@ -64,10 +64,11 @@
 - **Laravel 11.x** - エレガントなWeb開発フレームワーク
 - **MySQL 8.4** - リレーショナルデータベース
 
-### Frontend
-- **Vite** - 高速なフロントエンドビルドツール
-- **Tailwind CSS** - ユーティリティファーストCSSフレームワーク
+### Frontend（現在フェーズ）
 - **Blade Templates** - Laravel標準テンプレートエンジン
+- **Tailwind CSS** - ユーティリティファーストCSSフレームワーク  
+- **Vite** - 高速なフロントエンドビルドツール
+- **Alpine.js** - 軽量なJavaScriptフレームワーク（必要に応じて）
 
 ### Infrastructure
 - **Docker** - コンテナ化による開発環境統一
@@ -154,51 +155,199 @@ npm run build
 
 ## 🎯 開発ガイドライン
 
-### ディレクトリ配置規則
+### Clean Architecture 実装指針
 
-#### 新機能追加時
-1. **ドメイン層**: ビジネスルールとエンティティを定義
-2. **アプリケーション層**: ユースケースを実装
-3. **インフラ層**: データ永続化を実装
-4. **プレゼンテーション層**: UIとAPI エンドポイントを実装
+#### 各層の責務
+1. **Domain層（最重要）**
+   - ビジネスルールの中核
+   - 外部に依存しない純粋なPHPクラス
+   - Entity、Value Object、Repository Interface
 
-#### CQRS パターン
+2. **Application層**
+   - ユースケースの実装
+   - ドメインサービスのオーケストレーション
+   - Command/Query分離（CQRS）
+
+3. **Infrastructure層** 
+   - データ永続化（Eloquent）
+   - 外部API連携
+   - Repository実装
+
+4. **Presentation層**
+   - HTTPリクエスト処理
+   - Bladeテンプレート
+   - UI関連アセット
+
+### 新機能開発フロー
+
+#### 1. ドメイン層から開始
 ```php
-// Command例（書き込み）
-CreateBookLogCommand
-CreateBookLogHandler
+// 例: 新しい「読書目標」機能
+app/Domain/Entities/ReadingGoal.php
+app/Domain/ValueObjects/GoalPeriod.php
+app/Domain/Repositories/ReadingGoalRepositoryInterface.php
+```
 
-// Query例（読み込み）
-ListBookLogsQuery  
-ListBookLogsHandler
+#### 2. アプリケーション層でユースケース実装
+```php
+app/Application/UseCases/ReadingGoal/
+├── CreateReadingGoalUseCase.php
+├── UpdateProgressUseCase.php
+└── CalculateAchievementUseCase.php
+```
+
+#### 3. インフラ層で永続化
+```php
+app/Infrastructure/Persistence/Eloquent/ReadingGoal.php
+app/Infrastructure/Repositories/EloquentReadingGoalRepository.php
+```
+
+#### 4. プレゼンテーション層でUI
+```php
+app/Presentation/Http/Controllers/ReadingGoalController.php
+app/Presentation/Views/reading-goals/
+├── index.blade.php
+├── create.blade.php
+└── show.blade.php
+```
+
+### CQRS パターンの活用
+```php
+// Command例（書き込み操作）
+CreateBookLogCommand    → CreateBookLogInteractor
+UpdateBookLogCommand    → UpdateBookLogInteractor
+DeleteBookLogCommand    → DeleteBookLogInteractor
+
+// Query例（読み込み操作）  
+ListBookLogsQuery       → ListBookLogsInteractor
+FindBookLogByIdQuery    → FindBookLogByIdInteractor
+SearchBookLogsQuery     → SearchBookLogsInteractor
+
+// 実装構造
+app/Application/
+├── Contracts/          # 抽象クラス
+│   ├── UseCase.php    # 全UseCaseの基底クラス
+│   ├── Query.php      # 読み取り専用操作の基底クラス  
+│   └── Command.php    # 書き込み操作の基底クラス
+├── Queries/BookLog/    # CQRS読み取り操作
+│   ├── ListBookLogsQuery.php
+│   └── FindBookLogByIdQuery.php
+├── Commands/BookLog/   # CQRS書き込み操作
+│   ├── CreateBookLogCommand.php
+│   └── UpdateBookLogCommand.php
+└── Interactors/BookLog/ # ビジネスロジック実装
+    ├── ListBookLogsInteractor.php
+    ├── FindBookLogByIdInteractor.php
+    ├── CreateBookLogInteractor.php
+    └── UpdateBookLogInteractor.php
 ```
 
 ### コーディング規約
-- PSR-12準拠
-- 型宣言の積極的活用
-- ドメイン駆動設計の原則遵守
+- **PSR-12準拠** - PHPコーディングスタンダード
+- **型宣言の積極活用** - PHP 8.4の型システムを最大限活用
+- **ドメイン駆動設計** - ユビキタス言語の使用
+- **テスト駆動開発** - 各層に対応したテスト作成
 
-## 🧪 テスト
+### Clean Architecture学習のポイント
 
+#### 依存関係の方向
+```
+Presentation → Application → Domain ← Infrastructure
+              ↑___________________________|
+```
+- **重要**: ドメイン層は何にも依存しない
+- Infrastructure層はDomain層のインターフェースに依存
+- 依存性逆転の原則（DIP）を厳格に適用
+
+#### 実装順序の推奨
+1. **Domain Entity** - ビジネスオブジェクトの定義
+2. **Repository Interface** - データアクセスの抽象化
+3. **Use Case** - ビジネスロジックの実装
+4. **Repository Implementation** - データ永続化の実装
+5. **Controller** - HTTPインターフェースの実装
+6. **View** - ユーザーインターフェースの実装
+
+## 🧪 テスト戦略
+
+### 層別テスト方針
+```bash
+# ドメイン層テスト（最重要）
+tests/Unit/Domain/Entities/BookLogTest.php
+tests/Unit/Domain/ValueObjects/IsbnTest.php
+
+# アプリケーション層テスト
+tests/Unit/Application/UseCases/CreateBookLogUseCaseTest.php
+
+# インフラ層テスト  
+tests/Integration/Infrastructure/Repositories/EloquentBookLogRepositoryTest.php
+
+# プレゼンテーション層テスト
+tests/Feature/Presentation/Http/Controllers/BookLogControllerTest.php
+```
+
+### テスト実行
 ```bash
 # 全テスト実行
 docker-compose exec php php artisan test
 
-# 特定テストの実行
-docker-compose exec php php artisan test --filter=BookLogTest
+# 層別テスト実行
+docker-compose exec php php artisan test tests/Unit/Domain/
+docker-compose exec php php artisan test tests/Unit/Application/
 
-# カバレッジレポート生成
+# カバレッジレポート
 docker-compose exec php php artisan test --coverage
 ```
 
 ## 📊 今後の拡張予定
 
-- [ ] **認証機能** - ユーザー管理・ログイン機能
-- [ ] **API化** - RESTful API / GraphQL対応
-- [ ] **検索機能強化** - Elasticsearch導入
-- [ ] **推薦システム** - 機械学習による作品推薦
-- [ ] **ソーシャル機能** - レビュー共有・フォロー機能
+### Phase 1: Clean Architecture習得（現在）
+- [x] **基本構造構築** - 4層アーキテクチャの実装
+- [x] **BookLog機能** - 基本的なCRUD操作
+- [x] **CQRS実装** - Command/Query責務分離パターン
+- [x] **Interactor実装** - UseCase抽象クラスとInteractor具象クラス
+- [ ] **Value Object活用** - ISBN、評価、ステータスなど
+- [ ] **Domain Service** - ビジネスルール強化
+- [ ] **Event System** - ドメインイベントの実装
+
+### Phase 2: 機能拡張
+- [ ] **認証・認可** - Laravel Sanctum導入
+- [ ] **マルチメディア対応** - アニメ、漫画、小説モデル
+- [ ] **評価・レビュー** - 5段階評価とコメント
+- [ ] **検索・フィルタ** - 高度な検索機能
+- [ ] **統計・レポート** - 読書統計の可視化
+
+### Phase 3: 高度な機能（将来）
+- [ ] **API化** - RESTful API エンドポイント整備  
+- [ ] **Next.js移行** - モダンなReactフロントエンド
 - [ ] **外部API連携** - 作品情報の自動取得
+- [ ] **推薦システム** - 機械学習による作品推薦
+- [ ] **ソーシャル機能** - レビュー共有・フォロー
+
+### Phase 4: インフラ強化
+- [ ] **CI/CD構築** - GitHub Actions
+- [ ] **監視システム** - APM導入  
+- [ ] **パフォーマンス最適化** - キャッシュ戦略
+
+## 📚 Clean Architecture 学習リソース
+
+### 参考資料
+- [Clean Architecture (Robert C. Martin)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- [Domain-Driven Design (Eric Evans)](https://domainlanguage.com/ddd/)
+- [CQRS Journey (Microsoft)](https://docs.microsoft.com/en-us/azure/architecture/patterns/cqrs)
+
+### 実装例で学ぶポイント
+1. **エンティティの設計** - `app/Domain/Entities/BookLog.php`
+2. **リポジトリパターン** - `app/Domain/Repositories/`と`app/Infrastructure/Repositories/`の関係
+3. **CQRS実装** - `app/Application/Commands/`と`app/Application/Queries/`の分離
+4. **Interactorパターン** - `app/Application/Interactors/BookLog/`でのビジネスロジック実装
+5. **依存性注入** - `app/Providers/AppServiceProvider.php`でのバインディング
+4. **依存性注入** - `app/Providers/AppServiceProvider.php`でのバインディング
+
+### 段階的学習アプローチ
+1. **まずはBookLogで基本を理解** - 既存実装の読解
+2. **新しいValueObjectを追加** - ISBN、評価などの値オブジェクト
+3. **別エンティティで応用** - Anime、Mangaエンティティの実装
+4. **ドメインサービス導入** - 複雑なビジネスロジックの抽象化
 
 ## 🤝 コントリビューション
 
