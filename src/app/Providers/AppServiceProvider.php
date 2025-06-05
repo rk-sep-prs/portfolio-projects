@@ -25,6 +25,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Presentation層のViewパスを追加
+        $this->app['view']->addLocation(app_path('Presentation/Views'));
+        
+        // アセットパスの設定
+        $this->app->bind('path.presentation.assets', function () {
+            return app_path('Presentation/Assets');
+        });
     }
 }
