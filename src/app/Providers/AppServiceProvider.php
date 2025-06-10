@@ -41,25 +41,49 @@ class AppServiceProvider extends ServiceProvider
             \App\Application\Commands\BookLog\UpdateBookLogCommand::class
         );
 
-        // Interactor classes (UseCase implementations)
+        // CQRS Query Interactors (読み取り操作)
         $this->app->bind(
-            \App\Application\Interactors\BookLog\ListBookLogsInteractor::class,
-            \App\Application\Interactors\BookLog\ListBookLogsInteractor::class
+            \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class,
+            \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class
         );
         
         $this->app->bind(
-            \App\Application\Interactors\BookLog\FindBookLogByIdInteractor::class,
-            \App\Application\Interactors\BookLog\FindBookLogByIdInteractor::class
+            \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class,
+            \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class
+        );
+
+        // CQRS Command Interactors (書き込み操作)
+        $this->app->bind(
+            \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class,
+            \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class
         );
         
         $this->app->bind(
-            \App\Application\Interactors\BookLog\CreateBookLogInteractor::class,
-            \App\Application\Interactors\BookLog\CreateBookLogInteractor::class
+            \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class,
+            \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
+        );
+
+        // CQRS UseCase Interface bindings - コントローラーはこれらのインターフェースに依存
+        // Query UseCases (読み取り操作)
+        $this->app->bind(
+            \App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface::class,
+            \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class
         );
         
         $this->app->bind(
-            \App\Application\Interactors\BookLog\UpdateBookLogInteractor::class,
-            \App\Application\Interactors\BookLog\UpdateBookLogInteractor::class
+            \App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface::class,
+            \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class
+        );
+
+        // Command UseCases (書き込み操作)
+        $this->app->bind(
+            \App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface::class,
+            \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class
+        );
+        
+        $this->app->bind(
+            \App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface::class,
+            \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
         );
     }
 

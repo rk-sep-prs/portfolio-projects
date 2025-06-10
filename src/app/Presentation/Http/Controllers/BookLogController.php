@@ -4,30 +4,30 @@ namespace App\Presentation\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\View\View;
-use App\Application\Interactors\BookLog\ListBookLogsInteractor;
-use App\Application\Interactors\BookLog\FindBookLogByIdInteractor;
-use App\Application\Interactors\BookLog\CreateBookLogInteractor;
-use App\Application\Interactors\BookLog\UpdateBookLogInteractor;
+use App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface;
+use App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface;
+use App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface;
+use App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface;
 
 class BookLogController extends Controller
 {
-    // Interactorをプロパティとして定義
-    private readonly ListBookLogsInteractor $listBookLogsInteractor;
-    private readonly FindBookLogByIdInteractor $findBookLogByIdInteractor;
-    private readonly CreateBookLogInteractor $createBookLogInteractor;
-    private readonly UpdateBookLogInteractor $updateBookLogInteractor;
+    // CQRS UseCaseインターフェースをプロパティとして定義
+    private readonly ListBookLogsQueryUseCaseInterface $listBookLogsQueryUseCase;
+    private readonly FindBookLogByIdQueryUseCaseInterface $findBookLogByIdQueryUseCase;
+    private readonly CreateBookLogCommandUseCaseInterface $createBookLogCommandUseCase;
+    private readonly UpdateBookLogCommandUseCaseInterface $updateBookLogCommandUseCase;
 
-    // コンストラクタでInteractorを注入(DI)してもらう
+    // コンストラクタでCQRS UseCaseインターフェースを注入(DI)してもらう
     public function __construct(
-        ListBookLogsInteractor $listBookLogsInteractor,
-        FindBookLogByIdInteractor $findBookLogByIdInteractor,
-        CreateBookLogInteractor $createBookLogInteractor,
-        UpdateBookLogInteractor $updateBookLogInteractor
+        ListBookLogsQueryUseCaseInterface $listBookLogsQueryUseCase,
+        FindBookLogByIdQueryUseCaseInterface $findBookLogByIdQueryUseCase,
+        CreateBookLogCommandUseCaseInterface $createBookLogCommandUseCase,
+        UpdateBookLogCommandUseCaseInterface $updateBookLogCommandUseCase
     ) {
-        $this->listBookLogsInteractor = $listBookLogsInteractor;
-        $this->findBookLogByIdInteractor = $findBookLogByIdInteractor;
-        $this->createBookLogInteractor = $createBookLogInteractor;
-        $this->updateBookLogInteractor = $updateBookLogInteractor;
+        $this->listBookLogsQueryUseCase = $listBookLogsQueryUseCase;
+        $this->findBookLogByIdQueryUseCase = $findBookLogByIdQueryUseCase;
+        $this->createBookLogCommandUseCase = $createBookLogCommandUseCase;
+        $this->updateBookLogCommandUseCase = $updateBookLogCommandUseCase;
     }
 
     /**
@@ -35,8 +35,8 @@ class BookLogController extends Controller
      */
     public function index(): View // 戻り値はViewインスタンス
     {
-        // Interactorを実行して読書記録のリストを取得
-        $bookLogs = $this->listBookLogsInteractor->execute();
+        // Query UseCaseを実行して読書記録のリストを取得
+        $bookLogs = $this->listBookLogsQueryUseCase->execute();
 
         // 取得したデータを 'bookLogs' という名前で View に渡す
         return view('booklogs.index', ['bookLogs' => $bookLogs]);
@@ -47,7 +47,7 @@ class BookLogController extends Controller
      */
     public function show(string $id): View
     {
-        $bookLog = $this->findBookLogByIdInteractor->execute($id);
+        $bookLog = $this->findBookLogByIdQueryUseCase->execute($id);
         
         if (!$bookLog) {
             abort(404);
@@ -68,7 +68,7 @@ class BookLogController extends Controller
             'read_at' => 'nullable|date',
         ]);
 
-        $bookLog = $this->createBookLogInteractor->execute($validatedData);
+        $bookLog = $this->createBookLogCommandUseCase->execute($validatedData);
 
         return redirect()->route('booklogs.index')
             ->with('success', '読書記録を作成しました。');
@@ -91,7 +91,7 @@ class BookLogController extends Controller
             'update_data' => $validatedData
         ];
 
-        $bookLog = $this->updateBookLogInteractor->execute($updateData);
+        $bookLog = $this->updateBookLogCommandUseCase->execute($updateData);
 
         if (!$bookLog) {
             abort(404);
