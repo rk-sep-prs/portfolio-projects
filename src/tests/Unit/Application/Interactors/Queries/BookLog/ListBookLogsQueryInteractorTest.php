@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Application\Interactors\BookLog;
+namespace Tests\Unit\Application\Interactors\Queries\BookLog;
 
-use App\Application\Interactors\BookLog\ListBookLogsInteractor;
+use App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor;
 use App\Application\Queries\BookLog\ListBookLogsQuery;
 use App\Domain\Entities\BookLog;
 use Illuminate\Support\Collection;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
-class ListBookLogsInteractorTest extends TestCase
+class ListBookLogsQueryInteractorTest extends TestCase
 {
     public function tearDown(): void
     {
@@ -40,7 +40,7 @@ class ListBookLogsInteractorTest extends TestCase
             ->with(null)
             ->andReturn($expectedBookLogs);
 
-        $interactor = new ListBookLogsInteractor($mockQuery);
+        $interactor = new ListBookLogsQueryInteractor($mockQuery);
 
         // Act
         $result = $interactor->execute();
@@ -61,7 +61,7 @@ class ListBookLogsInteractorTest extends TestCase
             ->with($inputCriteria)
             ->andReturn($expectedBookLogs);
 
-        $interactor = new ListBookLogsInteractor($mockQuery);
+        $interactor = new ListBookLogsQueryInteractor($mockQuery);
 
         // Act
         $result = $interactor->execute($inputCriteria);
