@@ -86,17 +86,25 @@
                             </div>
                             
                             <!-- 読了日 -->
-                            @if ($log->readAt)
-                                <div class="border-t border-gray-100 pt-4 mt-4">
-                                    <div class="flex items-center text-sm text-gray-600">
+                            <div class="border-t border-gray-100 pt-4 mt-4">
+                                @if ($log->readAt)
+                                    <div class="flex items-center text-sm text-gray-600 mb-3">
                                         <span class="mr-2">📅</span>
                                         <span>読了日: </span>
                                         <time class="font-medium text-gray-800 ml-1">
                                             {{ $log->readAt->format('Y年m月d日') }}
                                         </time>
                                     </div>
-                                </div>
-                            @endif
+                                @endif
+                                
+                                <!-- アクションボタン -->
+                                <a 
+                                    href="{{ route('booklogs.edit', $log->id) }}"
+                                    class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-center py-2 px-4 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 font-medium text-sm inline-block"
+                                >
+                                    ✏️ 編集する
+                                </a>
+                            </div>
                         </div>
                     </div>
                 @endforeach

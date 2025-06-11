@@ -20,3 +20,5 @@ Route::get('/', function () {
 
 // ↓↓↓ この行を追加 ↓↓↓
 Route::get('/booklogs', [BookLogController::class, 'index'])->name('booklogs.index');
+Route::get('/booklogs/{id}/edit', [BookLogController::class, 'edit'])->name('booklogs.edit');
+Route::put('/booklogs/{id}', [BookLogController::class, 'update'])->name('booklogs.update');

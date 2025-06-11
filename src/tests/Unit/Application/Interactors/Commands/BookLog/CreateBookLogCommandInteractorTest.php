@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Interactors\Commands\BookLog;
 
 use App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor;
-use App\Application\Commands\BookLog\CreateBookLogCommand;
+use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
 use PHPUnit\Framework\TestCase;
 use Mockery;
@@ -18,10 +18,10 @@ class CreateBookLogCommandInteractorTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_execute_delegates_to_command()
+    public function test_execute_creates_book_log()
     {
         // Arrange
-        $mockCommand = Mockery::mock(CreateBookLogCommand::class);
+        $mockRepository = Mockery::mock(BookLogRepositoryInterface::class);
         $inputData = [
             'title' => 'Clean Architecture',
             'author' => 'Robert C. Martin',
@@ -29,30 +29,29 @@ class CreateBookLogCommandInteractorTest extends TestCase
             'read_at' => '2024-01-01'
         ];
 
-        $expectedBookLog = new BookLog(
-            id: 'test-id',
-            title: $inputData['title'],
-            author: $inputData['author'],
-            description: $inputData['description'],
-            readAt: new \DateTimeImmutable($inputData['read_at']),
-            createdAt: new \DateTimeImmutable('2024-01-01'),
-            updatedAt: new \DateTimeImmutable('2024-01-01')
-        );
-
-        $mockCommand->shouldReceive('execute')
+        // リポジトリのsaveメソッドが呼ばれることを期待
+        $mockRepository->shouldReceive('save')
             ->once()
-            ->with($inputData)
-            ->andReturn($expectedBookLog);
+            ->with(Mockery::on(function ($bookLog) use ($inputData) {
+                return $bookLog instanceof BookLog &&
+                       $bookLog->title === $inputData['title'] &&
+                       $bookLog->author === $inputData['author'] &&
+                       $bookLog->description === $inputData['description'] &&
+                       $bookLog->readAt instanceof \DateTimeImmutable;
+            }));
 
-        $interactor = new CreateBookLogCommandInteractor($mockCommand);
+        $interactor = new CreateBookLogCommandInteractor($mockRepository);
 
         // Act
         $result = $interactor->execute($inputData);
 
         // Assert
-        $this->assertEquals($expectedBookLog, $result);
+        $this->assertInstanceOf(BookLog::class, $result);
         $this->assertEquals($inputData['title'], $result->title);
         $this->assertEquals($inputData['author'], $result->author);
         $this->assertEquals($inputData['description'], $result->description);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $result->readAt);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $result->createdAt);
+        $this->assertInstanceOf(\DateTimeImmutable::class, $result->updatedAt);
     }
 }

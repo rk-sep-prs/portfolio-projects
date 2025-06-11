@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Interactors\Commands\BookLog;
 
-use App\Application\Contracts\UseCase;
 use App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface;
-use App\Application\Commands\BookLog\CreateBookLogCommand;
+use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
 
 /**
  * 読書記録作成コマンドInteractor
  * CQRS書き込み操作のビジネスロジック実装
  */
-class CreateBookLogCommandInteractor extends UseCase implements CreateBookLogCommandUseCaseInterface
+class CreateBookLogCommandInteractor implements CreateBookLogCommandUseCaseInterface
 {
     public function __construct(
-        private readonly CreateBookLogCommand $createBookLogCommand
+        private readonly BookLogRepositoryInterface $bookLogRepository
     ) {
     }
 
@@ -28,6 +27,25 @@ class CreateBookLogCommandInteractor extends UseCase implements CreateBookLogCom
      */
     public function execute(mixed $input = null): BookLog
     {
-        return $this->createBookLogCommand->execute($input);
+        // UUIDの生成（Laravel標準のStr::uuid()を使用）
+        $id = \Illuminate\Support\Str::uuid()->toString();
+        
+        // エンティティを作成
+        $bookLog = new BookLog(
+            id: $id,
+            title: $input['title'],
+            author: $input['author'],
+            description: $input['description'] ?? null,
+            readAt: isset($input['read_at']) && $input['read_at'] 
+                ? new \DateTimeImmutable($input['read_at']) 
+                : null,
+            createdAt: new \DateTimeImmutable(),
+            updatedAt: new \DateTimeImmutable()
+        );
+
+        // リポジトリに保存
+        $this->bookLogRepository->save($bookLog);
+
+        return $bookLog;
     }
 }

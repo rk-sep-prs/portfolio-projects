@@ -75,6 +75,20 @@ class BookLogController extends Controller
     }
 
     /**
+     * 読書記録の編集フォームを表示するアクション
+     */
+    public function edit(string $id): View
+    {
+        $bookLog = $this->findBookLogByIdQueryUseCase->execute($id);
+        
+        if (!$bookLog) {
+            abort(404);
+        }
+
+        return view('booklogs.edit', ['bookLog' => $bookLog]);
+    }
+
+    /**
      * 読書記録を更新するアクション
      */
     public function update(Request $request, string $id)
@@ -97,7 +111,8 @@ class BookLogController extends Controller
             abort(404);
         }
 
-        return redirect()->route('booklogs.show', $id)
+        // YAGNI: showページは後で実装するので、一覧に戻る
+        return redirect()->route('booklogs.index')
             ->with('success', '読書記録を更新しました。');
     }
 

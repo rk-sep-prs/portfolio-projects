@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Interactors\Queries\BookLog;
 
 use App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor;
-use App\Application\Queries\BookLog\FindBookLogByIdQuery;
+use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
 use PHPUnit\Framework\TestCase;
 use Mockery;
@@ -18,10 +18,10 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
         parent::tearDown();
     }
 
-    public function test_execute_delegates_to_query()
+    public function test_execute_finds_book_log_by_id()
     {
         // Arrange
-        $mockQuery = Mockery::mock(FindBookLogByIdQuery::class);
+        $mockRepository = Mockery::mock(BookLogRepositoryInterface::class);
         $bookId = 'test-id';
         $expectedBookLog = new BookLog(
             id: $bookId,
@@ -33,12 +33,12 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
             updatedAt: new \DateTimeImmutable('2024-01-01')
         );
 
-        $mockQuery->shouldReceive('execute')
+        $mockRepository->shouldReceive('findById')
             ->once()
             ->with($bookId)
             ->andReturn($expectedBookLog);
 
-        $interactor = new FindBookLogByIdQueryInteractor($mockQuery);
+        $interactor = new FindBookLogByIdQueryInteractor($mockRepository);
 
         // Act
         $result = $interactor->execute($bookId);
@@ -50,15 +50,15 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
     public function test_execute_returns_null_when_not_found()
     {
         // Arrange
-        $mockQuery = Mockery::mock(FindBookLogByIdQuery::class);
+        $mockRepository = Mockery::mock(BookLogRepositoryInterface::class);
         $bookId = 'non-existent-id';
 
-        $mockQuery->shouldReceive('execute')
+        $mockRepository->shouldReceive('findById')
             ->once()
             ->with($bookId)
             ->andReturn(null);
 
-        $interactor = new FindBookLogByIdQueryInteractor($mockQuery);
+        $interactor = new FindBookLogByIdQueryInteractor($mockRepository);
 
         // Act
         $result = $interactor->execute($bookId);

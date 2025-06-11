@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\BookLog;
+use App\Infrastructure\Persistence\Eloquent\BookLog;
 
 class BookLogSeeder extends Seeder
 {
