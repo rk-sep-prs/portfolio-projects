@@ -19,50 +19,6 @@ class AppServiceProvider extends ServiceProvider
             EloquentBookLogRepository::class
         );
 
-        // CQRS Query classes
-        $this->app->bind(
-            \App\Application\Queries\BookLog\ListBookLogsQuery::class,
-            \App\Application\Queries\BookLog\ListBookLogsQuery::class
-        );
-        
-        $this->app->bind(
-            \App\Application\Queries\BookLog\FindBookLogByIdQuery::class,
-            \App\Application\Queries\BookLog\FindBookLogByIdQuery::class
-        );
-
-        // CQRS Command classes
-        $this->app->bind(
-            \App\Application\Commands\BookLog\CreateBookLogCommand::class,
-            \App\Application\Commands\BookLog\CreateBookLogCommand::class
-        );
-        
-        $this->app->bind(
-            \App\Application\Commands\BookLog\UpdateBookLogCommand::class,
-            \App\Application\Commands\BookLog\UpdateBookLogCommand::class
-        );
-
-        // CQRS Query Interactors (読み取り操作)
-        $this->app->bind(
-            \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class,
-            \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class
-        );
-        
-        $this->app->bind(
-            \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class,
-            \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class
-        );
-
-        // CQRS Command Interactors (書き込み操作)
-        $this->app->bind(
-            \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class,
-            \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class
-        );
-        
-        $this->app->bind(
-            \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class,
-            \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
-        );
-
         // CQRS UseCase Interface bindings - コントローラーはこれらのインターフェースに依存
         // Query UseCases (読み取り操作)
         $this->app->bind(
@@ -84,6 +40,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface::class,
             \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
+        );
+
+        $this->app->bind(
+            \App\Application\UseCases\Commands\BookLog\DeleteBookLogCommandUseCaseInterface::class,
+            \App\Application\Interactors\Commands\BookLog\DeleteBookLogCommandInteractor::class
         );
     }
 

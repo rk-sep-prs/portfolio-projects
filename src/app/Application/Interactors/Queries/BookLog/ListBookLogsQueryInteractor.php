@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Interactors\Queries\BookLog;
 
-use App\Application\Contracts\UseCase;
 use App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface;
-use App\Application\Queries\BookLog\ListBookLogsQuery;
+use App\Domain\Repositories\BookLogRepositoryInterface;
 use Illuminate\Support\Collection;
 
 /**
  * 読書記録一覧取得クエリInteractor
  * CQRS読み取り操作のビジネスロジック実装
  */
-class ListBookLogsQueryInteractor extends UseCase implements ListBookLogsQueryUseCaseInterface
+class ListBookLogsQueryInteractor implements ListBookLogsQueryUseCaseInterface
 {
     public function __construct(
-        private readonly ListBookLogsQuery $listBookLogsQuery
+        private readonly BookLogRepositoryInterface $bookLogRepository
     ) {
     }
 
@@ -28,7 +27,7 @@ class ListBookLogsQueryInteractor extends UseCase implements ListBookLogsQueryUs
      */
     public function execute(mixed $input = null): Collection
     {
-        // Queryを実行して読書記録一覧を取得
-        return $this->listBookLogsQuery->execute($input);
+        // リポジトリから読書記録一覧を取得
+        return $this->bookLogRepository->findAll();
     }
 }

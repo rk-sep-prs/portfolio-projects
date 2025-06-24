@@ -27,6 +27,21 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    @if(session('success'))
+        <div class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50" id="success-message">
+            ✅ {{ session('success') }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const successMessage = document.getElementById('success-message');
+                if (successMessage) {
+                    successMessage.style.opacity = '0';
+                    setTimeout(() => successMessage.remove(), 300);
+                }
+            }, 3000);
+        </script>
+    @endif
+
     <div class="container mx-auto px-4 py-8 max-w-6xl">
         <!-- ヘッダー -->
         <div class="text-center mb-12">
@@ -86,17 +101,34 @@
                             </div>
                             
                             <!-- 読了日 -->
-                            @if ($log->readAt)
-                                <div class="border-t border-gray-100 pt-4 mt-4">
-                                    <div class="flex items-center text-sm text-gray-600">
+                            <div class="border-t border-gray-100 pt-4 mt-4">
+                                @if ($log->readAt)
+                                    <div class="flex items-center text-sm text-gray-600 mb-3">
                                         <span class="mr-2">📅</span>
                                         <span>読了日: </span>
                                         <time class="font-medium text-gray-800 ml-1">
                                             {{ $log->readAt->format('Y年m月d日') }}
                                         </time>
                                     </div>
+                                @endif
+                                
+                                <!-- アクションボタン -->
+                                <div class="flex gap-2 mt-2">
+                                    <a 
+                                        href="{{ route('booklogs.edit', $log->id) }}"
+                                        class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-center py-2 px-4 rounded-lg hover:from-indigo-600 hover:to-purple-700 transition-all duration-200 font-medium text-sm inline-block"
+                                    >
+                                        ✏️ 編集する
+                                    </a>
+                                    <form method="POST" action="{{ route('booklogs.destroy', $log->id) }}" class="flex-1" onsubmit="return confirmDelete(event)">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full bg-gradient-to-r from-red-400 to-pink-500 text-white text-center py-2 px-4 rounded-lg hover:from-red-500 hover:to-pink-600 transition-all duration-200 font-medium text-sm inline-block">
+                                            🗑️ 削除
+                                        </button>
+                                    </form>
                                 </div>
-                            @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -127,5 +159,15 @@
             <p>📚 読書を通じて、新しい世界を発見しよう</p>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(event) {
+            if (!confirm('本当に削除してよろしいですか？')) {
+                event.preventDefault();
+                return false;
+            }
+            return true;
+        }
+    </script>
 </body>
 </html>

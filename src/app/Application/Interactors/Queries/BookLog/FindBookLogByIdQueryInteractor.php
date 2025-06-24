@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace App\Application\Interactors\Queries\BookLog;
 
-use App\Application\Contracts\UseCase;
 use App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface;
-use App\Application\Queries\BookLog\FindBookLogByIdQuery;
+use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
 
 /**
  * 読書記録詳細取得クエリInteractor
  * CQRS読み取り操作のビジネスロジック実装
  */
-class FindBookLogByIdQueryInteractor extends UseCase implements FindBookLogByIdQueryUseCaseInterface
+class FindBookLogByIdQueryInteractor implements FindBookLogByIdQueryUseCaseInterface
 {
     public function __construct(
-        private readonly FindBookLogByIdQuery $findBookLogByIdQuery
+        private readonly BookLogRepositoryInterface $bookLogRepository
     ) {
     }
 
@@ -28,6 +27,6 @@ class FindBookLogByIdQueryInteractor extends UseCase implements FindBookLogByIdQ
      */
     public function execute(mixed $input = null): ?BookLog
     {
-        return $this->findBookLogByIdQuery->execute($input);
+        return $this->bookLogRepository->findById($input);
     }
 }

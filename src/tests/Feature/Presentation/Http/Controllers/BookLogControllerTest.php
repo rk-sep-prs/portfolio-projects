@@ -52,4 +52,134 @@ class BookLogControllerTest extends TestCase
         $response->assertViewIs('booklogs.index');
         $response->assertSee('まだ読書ログはありません');
     }
+    
+    public function test_edit_displays_edit_form()
+    {
+        // Arrange
+        $bookLog = BookLog::factory()->create([
+            'title' => 'Clean Architecture',
+            'author' => 'Robert C. Martin',
+            'description' => 'A great book about software architecture',
+            'read_at' => now()->subDays(10),
+        ]);
+
+        // Act
+        $response = $this->get("/booklogs/{$bookLog->id}/edit");
+
+        // Assert
+        $response->assertStatus(200);
+        $response->assertViewIs('booklogs.edit');
+        $response->assertViewHas('bookLog');
+        $response->assertSee('Clean Architecture');
+        $response->assertSee('Robert C. Martin');
+        $response->assertSee('A great book about software architecture');
+    }
+
+    public function test_edit_returns_404_for_nonexistent_book()
+    {
+        // Act
+        $response = $this->get('/booklogs/nonexistent-id/edit');
+
+        // Assert
+        $response->assertStatus(404);
+    }
+
+    public function test_update_modifies_book_log()
+    {
+        // Arrange
+        $bookLog = BookLog::factory()->create([
+            'title' => 'Original Title',
+            'author' => 'Original Author',
+            'description' => 'Original description',
+            'read_at' => now()->subDays(10),
+        ]);
+
+        $updateData = [
+            'title' => 'Updated Title',
+            'author' => 'Updated Author',
+            'description' => 'Updated description',
+            'read_at' => now()->subDays(5)->format('Y-m-d'),
+        ];
+
+        // Act
+        $response = $this->put("/booklogs/{$bookLog->id}", $updateData);
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertRedirect('/booklogs');
+        $response->assertSessionHas('success', '読書記録を更新しました。');
+
+        // Verify database changes
+        $updatedBookLog = BookLog::find($bookLog->id);
+        $this->assertEquals('Updated Title', $updatedBookLog->title);
+        $this->assertEquals('Updated Author', $updatedBookLog->author);
+        $this->assertEquals('Updated description', $updatedBookLog->description);
+    }
+
+    public function test_update_validates_required_fields()
+    {
+        // Arrange
+        $bookLog = BookLog::factory()->create();
+
+        // Act
+        $response = $this->put("/booklogs/{$bookLog->id}", [
+            'title' => '',
+            'author' => '',
+        ]);
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors(['title', 'author']);
+    }
+
+    public function test_update_returns_404_for_nonexistent_book()
+    {
+        // Act
+        $response = $this->put('/booklogs/nonexistent-id', [
+            'title' => 'Some Title',
+            'author' => 'Some Author',
+        ]);
+
+        // Assert
+        $response->assertStatus(404);
+    }
+
+    public function test_destroy_soft_deletes_book_log()
+    {
+        // Arrange
+        $bookLog = BookLog::factory()->create([
+            'title' => 'Delete Me',
+            'author' => 'Author',
+            'description' => 'To be deleted',
+            'read_at' => now()->subDays(1),
+        ]);
+
+        // Act
+        $response = $this->delete("/booklogs/{$bookLog->id}");
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertRedirect('/booklogs');
+        $response->assertSessionHas('success', '読書記録を削除しました。');
+
+        // 一覧に表示されない
+        $this->get('/booklogs')->assertDontSee('Delete Me');
+
+        // DB上はdeleted_atがセットされている
+        $this->assertSoftDeleted('book_logs', [
+            'id' => $bookLog->id,
+            'title' => 'Delete Me',
+        ]);
+    }
+
+    public function test_destroy_nonexistent_book_log_is_safe()
+    {
+        // Act
+        $response = $this->delete('/booklogs/nonexistent-id');
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertRedirect('/booklogs');
+        $response->assertSessionHas('success', '読書記録を削除しました。');
+    }
 }

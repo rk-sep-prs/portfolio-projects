@@ -8,6 +8,7 @@ use App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface;
 use App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface;
 use App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface;
 use App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface;
+use App\Application\UseCases\Commands\BookLog\DeleteBookLogCommandUseCaseInterface;
 
 class BookLogController extends Controller
 {
@@ -16,18 +17,21 @@ class BookLogController extends Controller
     private readonly FindBookLogByIdQueryUseCaseInterface $findBookLogByIdQueryUseCase;
     private readonly CreateBookLogCommandUseCaseInterface $createBookLogCommandUseCase;
     private readonly UpdateBookLogCommandUseCaseInterface $updateBookLogCommandUseCase;
+    private readonly DeleteBookLogCommandUseCaseInterface $deleteBookLogCommandUseCase;
 
     // コンストラクタでCQRS UseCaseインターフェースを注入(DI)してもらう
     public function __construct(
         ListBookLogsQueryUseCaseInterface $listBookLogsQueryUseCase,
         FindBookLogByIdQueryUseCaseInterface $findBookLogByIdQueryUseCase,
         CreateBookLogCommandUseCaseInterface $createBookLogCommandUseCase,
-        UpdateBookLogCommandUseCaseInterface $updateBookLogCommandUseCase
+        UpdateBookLogCommandUseCaseInterface $updateBookLogCommandUseCase,
+        DeleteBookLogCommandUseCaseInterface $deleteBookLogCommandUseCase // 追加
     ) {
         $this->listBookLogsQueryUseCase = $listBookLogsQueryUseCase;
         $this->findBookLogByIdQueryUseCase = $findBookLogByIdQueryUseCase;
         $this->createBookLogCommandUseCase = $createBookLogCommandUseCase;
         $this->updateBookLogCommandUseCase = $updateBookLogCommandUseCase;
+        $this->deleteBookLogCommandUseCase = $deleteBookLogCommandUseCase;
     }
 
     /**
@@ -75,6 +79,20 @@ class BookLogController extends Controller
     }
 
     /**
+     * 読書記録の編集フォームを表示するアクション
+     */
+    public function edit(string $id): View
+    {
+        $bookLog = $this->findBookLogByIdQueryUseCase->execute($id);
+        
+        if (!$bookLog) {
+            abort(404);
+        }
+
+        return view('booklogs.edit', ['bookLog' => $bookLog]);
+    }
+
+    /**
      * 読書記録を更新するアクション
      */
     public function update(Request $request, string $id)
@@ -97,8 +115,19 @@ class BookLogController extends Controller
             abort(404);
         }
 
-        return redirect()->route('booklogs.show', $id)
+        // YAGNI: showページは後で実装するので、一覧に戻る
+        return redirect()->route('booklogs.index')
             ->with('success', '読書記録を更新しました。');
+    }
+
+    /**
+     * 読書記録を論理削除するアクション
+     */
+    public function destroy(string $id)
+    {
+        $this->deleteBookLogCommandUseCase->execute($id);
+        return redirect()->route('booklogs.index')
+            ->with('success', '読書記録を削除しました。');
     }
 
     // --- 今後、登録フォーム表示用の create() メソッドや、
