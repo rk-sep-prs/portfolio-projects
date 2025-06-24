@@ -41,6 +41,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface::class,
             \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
         );
+
+        $this->app->bind(
+            \App\Application\UseCases\Commands\BookLog\DeleteBookLogCommandUseCaseInterface::class,
+            \App\Application\Interactors\Commands\BookLog\DeleteBookLogCommandInteractor::class
+        );
     }
 
     /**

@@ -143,4 +143,43 @@ class BookLogControllerTest extends TestCase
         // Assert
         $response->assertStatus(404);
     }
+
+    public function test_destroy_soft_deletes_book_log()
+    {
+        // Arrange
+        $bookLog = BookLog::factory()->create([
+            'title' => 'Delete Me',
+            'author' => 'Author',
+            'description' => 'To be deleted',
+            'read_at' => now()->subDays(1),
+        ]);
+
+        // Act
+        $response = $this->delete("/booklogs/{$bookLog->id}");
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertRedirect('/booklogs');
+        $response->assertSessionHas('success', '読書記録を削除しました。');
+
+        // 一覧に表示されない
+        $this->get('/booklogs')->assertDontSee('Delete Me');
+
+        // DB上はdeleted_atがセットされている
+        $this->assertSoftDeleted('book_logs', [
+            'id' => $bookLog->id,
+            'title' => 'Delete Me',
+        ]);
+    }
+
+    public function test_destroy_nonexistent_book_log_is_safe()
+    {
+        // Act
+        $response = $this->delete('/booklogs/nonexistent-id');
+
+        // Assert
+        $response->assertStatus(302);
+        $response->assertRedirect('/booklogs');
+        $response->assertSessionHas('success', '読書記録を削除しました。');
+    }
 }

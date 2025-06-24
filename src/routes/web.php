@@ -22,3 +22,4 @@ Route::get('/', function () {
 Route::get('/booklogs', [BookLogController::class, 'index'])->name('booklogs.index');
 Route::get('/booklogs/{id}/edit', [BookLogController::class, 'edit'])->name('booklogs.edit');
 Route::put('/booklogs/{id}', [BookLogController::class, 'update'])->name('booklogs.update');
+Route::delete('/booklogs/{id}', [BookLogController::class, 'destroy'])->name('booklogs.destroy');

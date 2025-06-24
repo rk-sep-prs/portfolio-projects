@@ -33,6 +33,14 @@ interface BookLogRepositoryInterface
      */
     public function save(BookLog $bookLog): void; // 保存するだけなので戻り値なし
 
+    /**
+     * IDを指定して論理削除します。
+     *
+     * @param string $id 削除する読書記録のID
+     * @return void
+     */
+    public function deleteById(string $id): void;
+
     // 必要であれば削除メソッドなども定義します
     // public function delete(BookLog $bookLog): void;
 }

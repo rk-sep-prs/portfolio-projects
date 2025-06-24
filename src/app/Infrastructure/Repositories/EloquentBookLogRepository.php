@@ -38,6 +38,14 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
         );
     }
 
+    public function deleteById(string $id): void
+    {
+        $model = BookLogModel::find($id);
+        if ($model) {
+            $model->delete();
+        }
+    }
+
     private function toEntity(BookLogModel $model): BookLogEntity
     {
         return new BookLogEntity(
