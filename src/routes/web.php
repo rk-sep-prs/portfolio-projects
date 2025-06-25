@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Presentation\Http\Controllers\BookLogController; // 作成したControllerをuse
+use App\Presentation\Http\Controllers\MainController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +15,7 @@ use App\Presentation\Http\Controllers\BookLogController; // 作成したControll
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [MainController::class, 'index'])->name('main.index');
 
 // ↓↓↓ この行を追加 ↓↓↓
 Route::get('/booklogs', [BookLogController::class, 'index'])->name('booklogs.index');
