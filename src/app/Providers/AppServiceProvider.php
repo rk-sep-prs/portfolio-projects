@@ -5,6 +5,18 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Infrastructure\Repositories\EloquentBookLogRepository;
+use App\Domain\Repositories\ActivityLogRepositoryInterface;
+use App\Infrastructure\Repositories\EloquentActivityLogRepository;
+use App\Application\UseCases\Queries\ActivityLog\ListActivityLogsQueryUseCaseInterface;
+use App\Application\Interactors\Queries\ActivityLog\ListActivityLogsQueryInteractor;
+use App\Application\UseCases\Queries\ActivityLog\FindActivityLogByIdQueryUseCaseInterface;
+use App\Application\Interactors\Queries\ActivityLog\FindActivityLogByIdQueryInteractor;
+use App\Application\UseCases\Commands\ActivityLog\CreateActivityLogCommandUseCaseInterface;
+use App\Application\Interactors\Commands\ActivityLog\CreateActivityLogCommandInteractor;
+use App\Application\UseCases\Commands\ActivityLog\UpdateActivityLogCommandUseCaseInterface;
+use App\Application\Interactors\Commands\ActivityLog\UpdateActivityLogCommandInteractor;
+use App\Application\UseCases\Commands\ActivityLog\DeleteActivityLogCommandUseCaseInterface;
+use App\Application\Interactors\Commands\ActivityLog\DeleteActivityLogCommandInteractor;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +31,11 @@ class AppServiceProvider extends ServiceProvider
             EloquentBookLogRepository::class
         );
 
+        $this->app->bind(
+            ActivityLogRepositoryInterface::class,
+            EloquentActivityLogRepository::class
+        );
+
         // CQRS UseCase Interface bindings - コントローラーはこれらのインターフェースに依存
         // Query UseCases (読み取り操作)
         $this->app->bind(
@@ -29,6 +46,16 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface::class,
             \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class
+        );
+
+        $this->app->bind(
+            ListActivityLogsQueryUseCaseInterface::class,
+            ListActivityLogsQueryInteractor::class
+        );
+        
+        $this->app->bind(
+            FindActivityLogByIdQueryUseCaseInterface::class,
+            FindActivityLogByIdQueryInteractor::class
         );
 
         // Command UseCases (書き込み操作)
@@ -45,6 +72,21 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             \App\Application\UseCases\Commands\BookLog\DeleteBookLogCommandUseCaseInterface::class,
             \App\Application\Interactors\Commands\BookLog\DeleteBookLogCommandInteractor::class
+        );
+
+        $this->app->bind(
+            CreateActivityLogCommandUseCaseInterface::class,
+            CreateActivityLogCommandInteractor::class
+        );
+        
+        $this->app->bind(
+            UpdateActivityLogCommandUseCaseInterface::class,
+            UpdateActivityLogCommandInteractor::class
+        );
+
+        $this->app->bind(
+            DeleteActivityLogCommandUseCaseInterface::class,
+            DeleteActivityLogCommandInteractor::class
         );
     }
 

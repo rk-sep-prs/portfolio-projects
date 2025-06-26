@@ -25,7 +25,7 @@
                     <li>
                         <span class="block text-xs text-gray-400 mt-4 mb-1 ml-1">カテゴリ</span>
                         <ul class="space-y-1">
-                            <li><a href="{{ route('booklogs.index') }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-100 text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-400"></span>本</a></li>
+                            <li><a href="{{ route('activitylogs.index', ['category' => 'book']) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-100 text-blue-700"><span class="w-2 h-2 rounded-full bg-blue-400"></span>本</a></li>
                             <li><a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-green-100 text-green-700"><span class="w-2 h-2 rounded-full bg-green-400"></span>映画</a></li>
                             <li><a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-pink-100 text-pink-700"><span class="w-2 h-2 rounded-full bg-pink-400"></span>アニメ</a></li>
                             <li><a href="#" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-purple-100 text-purple-700"><span class="w-2 h-2 rounded-full bg-purple-400"></span>勉強</a></li>
