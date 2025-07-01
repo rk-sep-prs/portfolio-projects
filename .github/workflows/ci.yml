@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, intl
+          coverage: none
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+        working-directory: ./src
+      - name: Copy .env
+        run: cp .env.example .env || true
+        working-directory: ./src
+      - name: Generate app key
+        run: php artisan key:generate
+        working-directory: ./src
+      - name: Run migrations
+        run: php artisan migrate --env=testing --force
+        working-directory: ./src
+      - name: Run PHPUnit
+        run: vendor/bin/phpunit
+        working-directory: ./src
