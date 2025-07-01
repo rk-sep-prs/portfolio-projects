@@ -7,6 +7,8 @@ namespace App\Application\Interactors\Commands\BookLog;
 use App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface;
 use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
+use App\Application\DTOs\BookLogs\Input\BookLogUpdateRequestDTO;
+use App\Application\DTOs\BookLogs\Output\BookLogResponseDTO;
 
 /**
  * 読書記録作成コマンドInteractor
@@ -30,15 +32,26 @@ class CreateBookLogCommandInteractor implements CreateBookLogCommandUseCaseInter
         // UUIDの生成（Laravel標準のStr::uuid()を使用）
         $id = \Illuminate\Support\Str::uuid()->toString();
         
-        // エンティティを作成
-        $bookLog = new BookLog(
-            id: $id,
+        // 入力DTOに詰め替え
+        $rating = isset($input['rating']) && is_numeric($input['rating']) ? (int)$input['rating'] : null;
+        $inputDto = new BookLogUpdateRequestDTO(
             title: $input['title'],
             author: $input['author'],
             description: $input['description'] ?? null,
-            readAt: isset($input['read_at']) && $input['read_at'] 
-                ? new \DateTimeImmutable($input['read_at']) 
+            readAt: $input['read_at'] ?? null,
+            rating: $rating
+        );
+
+        // エンティティを作成
+        $bookLog = new BookLog(
+            id: $id,
+            title: $inputDto->title,
+            author: $inputDto->author,
+            description: $inputDto->description,
+            readAt: isset($inputDto->readAt) && $inputDto->readAt
+                ? new \DateTimeImmutable($inputDto->readAt)
                 : null,
+            rating: $inputDto->rating,
             createdAt: new \DateTimeImmutable(),
             updatedAt: new \DateTimeImmutable()
         );
@@ -46,6 +59,9 @@ class CreateBookLogCommandInteractor implements CreateBookLogCommandUseCaseInter
         // リポジトリに保存
         $this->bookLogRepository->save($bookLog);
 
-        return $bookLog;
+        // 出力DTOに詰め替えて返す（必要に応じて）
+        // return new BookLogResponseDTO(...)
+
+        return $bookLog; // 既存互換のため一旦エンティティ返却
     }
 }

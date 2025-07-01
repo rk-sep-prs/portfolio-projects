@@ -70,7 +70,7 @@ class BookLogController extends Controller
             'author' => 'required|string|max:255',
             'description' => 'nullable|string',
             'read_at' => 'nullable|date',
-            'rating' => 'nullable|integer|min:1|max:10', // 追加
+            'rating' => 'required|integer|min:1|max:10', // 必須に変更
         ]);
 
         $bookLog = $this->createBookLogCommandUseCase->execute($validatedData);
@@ -103,7 +103,7 @@ class BookLogController extends Controller
             'author' => 'required|string|max:255',
             'description' => 'nullable|string',
             'read_at' => 'nullable|date',
-            'rating' => 'nullable|integer|min:1|max:10', // 追加
+            'rating' => 'required|integer|min:1|max:10', // 必須に変更
         ]);
 
         $updateData = [
@@ -111,7 +111,13 @@ class BookLogController extends Controller
             'update_data' => $validatedData
         ];
 
-        $bookLog = $this->updateBookLogCommandUseCase->execute($updateData);
+        try {
+            $bookLog = $this->updateBookLogCommandUseCase->execute($updateData);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput();
+        }
 
         if (!$bookLog) {
             abort(404);
