@@ -18,6 +18,7 @@ class BookLogSeeder extends Seeder
             'author' => 'Robert C. Martin',
             'description' => 'ソフトウェア設計とアーキテクチャについての本。クリーンアーキテクチャの原則を学べる素晴らしい一冊。',
             'read_at' => now()->subDays(30),
+            'rating' => 9,
         ]);
 
         BookLog::create([
@@ -25,6 +26,7 @@ class BookLogSeeder extends Seeder
             'author' => 'Eric Evans',
             'description' => 'DDD（ドメイン駆動設計）の名著。複雑なソフトウェアの設計に必要な概念が詰まっている。',
             'read_at' => now()->subDays(20),
+            'rating' => 10,
         ]);
 
         BookLog::create([
@@ -32,6 +34,7 @@ class BookLogSeeder extends Seeder
             'author' => '竹澤有貴',
             'description' => 'LaravelでのWebアプリケーション開発の実践的な内容。MVCからClean Architectureまで学べる。',
             'read_at' => now()->subDays(10),
+            'rating' => 8,
         ]);
 
         BookLog::create([
@@ -39,6 +42,7 @@ class BookLogSeeder extends Seeder
             'author' => 'Martin Fowler',
             'description' => 'コードの品質を向上させるためのリファクタリング技法について。現在読書中。',
             'read_at' => null, // まだ読み終わっていない
+            'rating' => 7,
         ]);
 
         BookLog::create([
@@ -46,6 +50,7 @@ class BookLogSeeder extends Seeder
             'author' => 'Sandi Metz',
             'description' => 'Rubyを使ったオブジェクト指向設計の実践的な解説書。設計原則を具体例とともに学べる。',
             'read_at' => now()->subDays(5),
+            'rating' => 8,
         ]);
     }
 }

@@ -111,6 +111,27 @@
                     <p class="mt-1 text-sm text-gray-500">読了していない場合は空欄でも構いません</p>
                 </div>
 
+                <!-- 10段階評価 -->
+                <div>
+                    <label for="rating" class="block text-sm font-medium text-gray-700 mb-2">
+                        ⭐ 評価（1〜10）<span class="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="number" 
+                        id="rating" 
+                        name="rating" 
+                        value="{{ old('rating', $bookLog->rating) }}"
+                        min="1" max="10"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
+                        placeholder="1〜10で評価"
+                        required
+                    >
+                    @error('rating')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    <p class="mt-1 text-sm text-gray-500">1が最低、10が最高評価です（必須）</p>
+                </div>
+
                 <!-- ボタン -->
                 <div class="flex space-x-4 pt-6">
                     <button 

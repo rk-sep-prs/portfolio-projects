@@ -25,11 +25,13 @@ class BookLog extends Model
         "author", 
         "description",
         "read_at",
+        "rating", // 追加
     ];
 
     protected $casts = [
         "read_at" => "datetime",
         "created_at" => "datetime",
         "updated_at" => "datetime",
+        "rating" => "integer", // 追加
     ];
 }

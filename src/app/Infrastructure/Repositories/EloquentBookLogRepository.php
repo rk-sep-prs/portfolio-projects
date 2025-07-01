@@ -34,6 +34,7 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
                 'author' => $bookLog->author,
                 'description' => $bookLog->description,
                 'read_at' => $bookLog->readAt,
+                'rating' => $bookLog->rating, // 追加
             ]
         );
     }
@@ -54,6 +55,7 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
             author: $model->author,
             description: $model->description,
             readAt: $model->read_at ? new \DateTimeImmutable($model->read_at->format('Y-m-d H:i:s')) : null,
+            rating: $model->rating, // 追加
             createdAt: $model->created_at ? new \DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')) : null,
             updatedAt: $model->updated_at ? new \DateTimeImmutable($model->updated_at->format('Y-m-d H:i:s')) : null
         );
