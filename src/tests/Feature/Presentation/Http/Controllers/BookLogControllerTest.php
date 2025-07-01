@@ -92,6 +92,7 @@ class BookLogControllerTest extends TestCase
             'author' => 'Original Author',
             'description' => 'Original description',
             'read_at' => now()->subDays(10),
+            'rating' => 5,
         ]);
 
         $updateData = [
@@ -99,6 +100,7 @@ class BookLogControllerTest extends TestCase
             'author' => 'Updated Author',
             'description' => 'Updated description',
             'read_at' => now()->subDays(5)->format('Y-m-d'),
+            'rating' => 8,
         ];
 
         // Act
@@ -119,12 +121,15 @@ class BookLogControllerTest extends TestCase
     public function test_update_validates_required_fields()
     {
         // Arrange
-        $bookLog = BookLog::factory()->create();
+        $bookLog = BookLog::factory()->create([
+            'rating' => 5,
+        ]);
 
         // Act
         $response = $this->put("/booklogs/{$bookLog->id}", [
             'title' => '',
             'author' => '',
+            'rating' => '', // ratingも空で送信
         ]);
 
         // Assert
@@ -138,6 +143,7 @@ class BookLogControllerTest extends TestCase
         $response = $this->put('/booklogs/nonexistent-id', [
             'title' => 'Some Title',
             'author' => 'Some Author',
+            'rating' => 5,
         ]);
 
         // Assert

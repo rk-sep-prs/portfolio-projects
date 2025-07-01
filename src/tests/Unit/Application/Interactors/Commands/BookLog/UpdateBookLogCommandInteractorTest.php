@@ -28,7 +28,8 @@ class UpdateBookLogCommandInteractorTest extends TestCase
                 'title' => 'Updated Clean Architecture',
                 'author' => 'Robert C. Martin',
                 'description' => 'Updated description',
-                'read_at' => '2024-01-02'
+                'read_at' => '2024-01-02',
+                'rating' => 8 // ★追加
             ]
         ];
 
@@ -78,7 +79,8 @@ class UpdateBookLogCommandInteractorTest extends TestCase
         $updateData = [
             'id' => 'non-existent-id',
             'update_data' => [
-                'title' => 'Updated Title'
+                'title' => 'Updated Title',
+                'rating' => 5 // ★追加
             ]
         ];
 

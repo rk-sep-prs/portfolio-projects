@@ -7,7 +7,6 @@ namespace App\Application\Interactors\Commands\BookLog;
 use App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface;
 use App\Domain\Repositories\BookLogRepositoryInterface;
 use App\Domain\Entities\BookLog;
-use App\Application\DTOs\BookLogUpdateDTO;
 use App\Application\DTOs\BookLogs\Input\BookLogUpdateRequestDTO;
 use App\Application\DTOs\BookLogs\Output\BookLogResponseDTO;
 use Illuminate\Validation\ValidationException;
