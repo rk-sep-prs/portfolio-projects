@@ -432,3 +432,6 @@ help:
 # デフォルトターゲット（make コマンドのみで実行）
 default: help
 
+phpstan:
+	docker compose exec php ./vendor/bin/phpstan analyse --memory-limit=1G --configuration=phpstan.neon
+

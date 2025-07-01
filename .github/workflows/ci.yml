@@ -39,6 +39,9 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --env=testing --force
         working-directory: ./src
+      - name: Run PHPStan (Larastan)
+        run: vendor/bin/phpstan analyse --memory-limit=1G --configuration=phpstan.neon
+        working-directory: ./src
       - name: Run PHPUnit
         run: vendor/bin/phpunit
         working-directory: ./src
