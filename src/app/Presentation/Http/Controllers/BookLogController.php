@@ -70,6 +70,7 @@ class BookLogController extends Controller
             'author' => 'required|string|max:255',
             'description' => 'nullable|string',
             'read_at' => 'nullable|date',
+            'rating' => 'nullable|integer|min:1|max:10', // 追加
         ]);
 
         $bookLog = $this->createBookLogCommandUseCase->execute($validatedData);
@@ -102,6 +103,7 @@ class BookLogController extends Controller
             'author' => 'required|string|max:255',
             'description' => 'nullable|string',
             'read_at' => 'nullable|date',
+            'rating' => 'nullable|integer|min:1|max:10', // 追加
         ]);
 
         $updateData = [

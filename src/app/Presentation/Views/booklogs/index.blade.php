@@ -98,6 +98,14 @@
                                         <p class="text-gray-700 text-sm leading-relaxed">{{ Str::limit($log->description, 120) }}</p>
                                     </div>
                                 @endif
+
+                                <!-- 評価 -->
+                                @if (!is_null($log->rating))
+                                    <div class="flex items-center mb-2">
+                                        <span class="text-yellow-500 text-lg mr-1">⭐</span>
+                                        <span class="font-semibold text-gray-800">評価: {{ $log->rating }}/10</span>
+                                    </div>
+                                @endif
                             </div>
                             
                             <!-- 読了日 -->

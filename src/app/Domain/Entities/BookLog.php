@@ -14,6 +14,7 @@ class BookLog
         public readonly string $author,
         public readonly ?string $description = null,
         public readonly ?DateTimeImmutable $readAt = null,
+        public readonly ?int $rating = null, // ★ 10段階評価を追加
         public readonly ?DateTimeImmutable $createdAt = null,
         public readonly ?DateTimeImmutable $updatedAt = null
     ) {
