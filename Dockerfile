@@ -3,7 +3,13 @@ FROM thecodingmachine/php:8.2-v4-fpm
 
 WORKDIR /app
 
+# 先にbootstrap/cacheを作成
+RUN mkdir -p /app/bootstrap/cache
+
 COPY ./src .
+
+# 念のため再度作成（COPYで消える場合があるため）
+RUN mkdir -p /app/bootstrap/cache
 
 RUN composer install --no-dev --optimize-autoloader
 
