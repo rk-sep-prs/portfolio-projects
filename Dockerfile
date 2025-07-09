@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN mkdir -p /app/bootstrap/cache
 
-COPY ./src .
+COPY ./backend .
 
 RUN mkdir -p /app/bootstrap/cache
 

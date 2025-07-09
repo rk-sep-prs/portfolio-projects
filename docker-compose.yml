@@ -6,9 +6,9 @@ services:
       dockerfile: Dockerfile # Dockerfileの名前
     container_name: myapp_php # 分かりやすいコンテナ名 (任意)
     volumes:
-      # ホストの ./src ディレクトリをコンテナ内の /var/www/html にマウント
+      # ホストの ./backend ディレクトリをコンテナ内の /var/www/html にマウント
       # これでホストで編集したコードがコンテナに即時反映される
-      - ./src:/var/www/html
+      - ./backend:/var/www/html
     working_dir: /var/www/html # コンテナ内でのコマンド実行時のデフォルトディレクトリ
     networks:
       - app-network # 下で定義するカスタムネットワークに接続
@@ -25,7 +25,7 @@ services:
       - "${APP_PORT:-80}:80"
     volumes:
       # NginxもPHPと同じアプリケーションコードを参照する必要がある
-      - ./src:/var/www/html
+      - ./backend:/var/www/html
     depends_on:
       # phpサービスが起動してからnginxを起動する
       - php
