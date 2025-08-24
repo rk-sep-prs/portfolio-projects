@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Interactors\Queries\BookLog;
 
 use App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface;
-use App\Domain\Repositories\BookLogRepositoryInterface;
+use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
 use Illuminate\Support\Collection;
 
 /**
@@ -21,7 +21,7 @@ class ListBookLogsQueryInteractor implements ListBookLogsQueryUseCaseInterface
 
     /**
      * 読書記録一覧を取得するクエリユースケースを実行
-     * 
+     *
      * @param mixed $input 入力データ（将来的に検索条件等を指定可能）
      * @return Collection 読書記録のコレクション
      */

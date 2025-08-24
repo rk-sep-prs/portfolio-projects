@@ -2,11 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Repositories;
+namespace App\Infrastructure\BookLog\Repositories;
 
-use App\Domain\Repositories\BookLogRepositoryInterface;
-use App\Domain\Entities\BookLog as BookLogEntity;  // エンティティに as を付ける
-use App\Infrastructure\Persistence\Eloquent\BookLog as BookLogModel;  // モデルに明確なエイリアスを指定
+use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
+use App\Domain\BookLog\Entities\BookLog as BookLogEntity;
+use App\Domain\BookLog\ValueObjects\BookTitle;
+use App\Domain\BookLog\ValueObjects\BookRating;
+use App\Infrastructure\BookLog\Persistence\Eloquent\BookLog as BookLogModel;
 use Illuminate\Support\Collection;
 
 class EloquentBookLogRepository implements BookLogRepositoryInterface
@@ -14,14 +16,14 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
     public function findAll(): Collection
     {
         $models = BookLogModel::all();
-        
+
         return $models->map(fn($model) => $this->toEntity($model));
     }
 
     public function findById(string $id): ?BookLogEntity
     {
         $model = BookLogModel::find($id);
-        
+
         return $model ? $this->toEntity($model) : null;
     }
 
@@ -30,11 +32,11 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
         BookLogModel::updateOrCreate(
             ['id' => $bookLog->id],
             [
-                'title' => $bookLog->title,
+                'title' => $bookLog->title->value(),
                 'author' => $bookLog->author,
                 'description' => $bookLog->description,
                 'read_at' => $bookLog->readAt,
-                'rating' => $bookLog->rating, // 追加
+                'rating' => $bookLog->rating?->value(),
             ]
         );
     }
@@ -51,11 +53,11 @@ class EloquentBookLogRepository implements BookLogRepositoryInterface
     {
         return new BookLogEntity(
             id: $model->id,
-            title: $model->title,
+            title: new BookTitle($model->title),
             author: $model->author,
             description: $model->description,
             readAt: $model->read_at ? new \DateTimeImmutable($model->read_at->format('Y-m-d H:i:s')) : null,
-            rating: $model->rating, // 追加
+            rating: $model->rating ? new BookRating($model->rating) : null,
             createdAt: $model->created_at ? new \DateTimeImmutable($model->created_at->format('Y-m-d H:i:s')) : null,
             updatedAt: $model->updated_at ? new \DateTimeImmutable($model->updated_at->format('Y-m-d H:i:s')) : null
         );

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Interactors\Queries\BookLog;
 
 use App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor;
-use App\Domain\Repositories\BookLogRepositoryInterface;
-use App\Domain\Entities\BookLog;
+use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
+use App\Domain\BookLog\Entities\BookLog;
+use App\Domain\BookLog\ValueObjects\BookTitle;
+use App\Domain\BookLog\ValueObjects\BookRating;
 use PHPUnit\Framework\TestCase;
 use Mockery;
 
@@ -25,10 +27,11 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
         $bookId = 'test-id';
         $expectedBookLog = new BookLog(
             id: $bookId,
-            title: 'Clean Architecture',
+            title: new BookTitle('Clean Architecture'),
             author: 'Robert C. Martin',
             description: 'A great book about software architecture',
             readAt: new \DateTimeImmutable('2024-01-01'),
+            rating: new BookRating(8),
             createdAt: new \DateTimeImmutable('2024-01-01'),
             updatedAt: new \DateTimeImmutable('2024-01-01')
         );

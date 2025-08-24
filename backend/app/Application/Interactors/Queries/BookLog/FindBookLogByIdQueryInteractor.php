@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Interactors\Queries\BookLog;
 
 use App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface;
-use App\Domain\Repositories\BookLogRepositoryInterface;
-use App\Domain\Entities\BookLog;
+use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
+use App\Domain\BookLog\Entities\BookLog;
 
 /**
  * 読書記録詳細取得クエリInteractor
@@ -21,7 +21,7 @@ class FindBookLogByIdQueryInteractor implements FindBookLogByIdQueryUseCaseInter
 
     /**
      * IDを指定して読書記録を取得するクエリユースケースを実行
-     * 
+     *
      * @param mixed $input 検索ID
      * @return BookLog|null 読書記録エンティティまたはnull
      */

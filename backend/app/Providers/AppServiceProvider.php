@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\Domain\Repositories\BookLogRepositoryInterface;
-use App\Infrastructure\Repositories\EloquentBookLogRepository;
+use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
+use App\Infrastructure\BookLog\Repositories\EloquentBookLogRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
             \App\Application\UseCases\Queries\BookLog\ListBookLogsQueryUseCaseInterface::class,
             \App\Application\Interactors\Queries\BookLog\ListBookLogsQueryInteractor::class
         );
-        
+
         $this->app->bind(
             \App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface::class,
             \App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor::class
@@ -36,7 +36,7 @@ class AppServiceProvider extends ServiceProvider
             \App\Application\UseCases\Commands\BookLog\CreateBookLogCommandUseCaseInterface::class,
             \App\Application\Interactors\Commands\BookLog\CreateBookLogCommandInteractor::class
         );
-        
+
         $this->app->bind(
             \App\Application\UseCases\Commands\BookLog\UpdateBookLogCommandUseCaseInterface::class,
             \App\Application\Interactors\Commands\BookLog\UpdateBookLogCommandInteractor::class
@@ -53,12 +53,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Presentation層のViewパスを追加
-        $this->app['view']->addLocation(app_path('Presentation/Views'));
-        
-        // アセットパスの設定
-        $this->app->bind('path.presentation.assets', function () {
-            return app_path('Presentation/Assets');
-        });
+        //
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Persistence\Eloquent;
+namespace App\Infrastructure\BookLog\Persistence\Eloquent;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -22,16 +22,16 @@ class BookLog extends Model
 
     protected $fillable = [
         "title",
-        "author", 
+        "author",
         "description",
         "read_at",
-        "rating", // 追加
+        "rating",
     ];
 
     protected $casts = [
         "read_at" => "datetime",
         "created_at" => "datetime",
         "updated_at" => "datetime",
-        "rating" => "integer", // 追加
+        "rating" => "integer",
     ];
 }

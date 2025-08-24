@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Repositories; // 名前空間はディレクトリ構成に合わせてください
+namespace App\Domain\BookLog\Repositories;
 
-use App\Domain\Entities\BookLog;
-use Illuminate\Support\Collection; // Laravelの便利なコレクションクラスを使う例
+use App\Domain\BookLog\Entities\BookLog;
+use Illuminate\Support\Collection;
 
 interface BookLogRepositoryInterface
 {
@@ -14,7 +14,7 @@ interface BookLogRepositoryInterface
      *
      * @return Collection<int, BookLog> BookLogエンティティのコレクション
      */
-    public function findAll(): Collection; // 戻り値は Collection<BookLog> 型
+    public function findAll(): Collection;
 
     /**
      * IDを指定して読書記録を1件取得します。
@@ -23,7 +23,7 @@ interface BookLogRepositoryInterface
      * @param string $id 検索する読書記録のID (UUIDなど)
      * @return BookLog|null 見つかったBookLogエンティティ、または null
      */
-    public function findById(string $id): ?BookLog; // 戻り値は BookLog または null
+    public function findById(string $id): ?BookLog;
 
     /**
      * 読書記録を永続化（新規作成または更新）します。
@@ -31,7 +31,7 @@ interface BookLogRepositoryInterface
      * @param BookLog $bookLog 保存するBookLogエンティティ
      * @return void
      */
-    public function save(BookLog $bookLog): void; // 保存するだけなので戻り値なし
+    public function save(BookLog $bookLog): void;
 
     /**
      * IDを指定して論理削除します。
@@ -40,7 +40,4 @@ interface BookLogRepositoryInterface
      * @return void
      */
     public function deleteById(string $id): void;
-
-    // 必要であれば削除メソッドなども定義します
-    // public function delete(BookLog $bookLog): void;
 }
