@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\Interactors\Queries\BookLog;
 
 use App\Application\UseCases\Queries\BookLog\FindBookLogByIdQueryUseCaseInterface;
+use App\Application\DTOs\BookLogs\Output\BookLogResponseDTO;
 use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
-use App\Domain\BookLog\Entities\BookLog;
 
 /**
  * 読書記録詳細取得クエリInteractor
@@ -23,10 +23,17 @@ class FindBookLogByIdQueryInteractor implements FindBookLogByIdQueryUseCaseInter
      * IDを指定して読書記録を取得するクエリユースケースを実行
      *
      * @param mixed $input 検索ID
-     * @return BookLog|null 読書記録エンティティまたはnull
+     * @return BookLogResponseDTO|null 読書記録のDTOまたはnull
      */
-    public function execute(mixed $input = null): ?BookLog
+    public function execute(mixed $input = null): ?BookLogResponseDTO
     {
-        return $this->bookLogRepository->findById($input);
+        $bookLog = $this->bookLogRepository->findById($input);
+
+        if (!$bookLog) {
+            return null;
+        }
+
+        // エンティティをDTOに変換して返す
+        return BookLogResponseDTO::fromEntity($bookLog);
     }
 }

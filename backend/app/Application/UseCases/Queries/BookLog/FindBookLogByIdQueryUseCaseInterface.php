@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCases\Queries\BookLog;
 
-use App\Domain\BookLog\Entities\BookLog;
+use App\Application\DTOs\BookLogs\Output\BookLogResponseDTO;
 
 /**
  * 読書記録詳細取得クエリユースケースインターフェース
@@ -16,7 +16,7 @@ interface FindBookLogByIdQueryUseCaseInterface
      * IDを指定して読書記録を取得する
      *
      * @param mixed $input 検索ID
-     * @return BookLog|null 読書記録エンティティまたはnull
+     * @return BookLogResponseDTO|null 読書記録のDTOまたはnull
      */
-    public function execute(mixed $input = null): ?BookLog;
+    public function execute(mixed $input = null): ?BookLogResponseDTO;
 }

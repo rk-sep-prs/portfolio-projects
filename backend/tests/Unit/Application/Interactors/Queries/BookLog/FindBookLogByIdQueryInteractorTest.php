@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Interactors\Queries\BookLog;
 
 use App\Application\Interactors\Queries\BookLog\FindBookLogByIdQueryInteractor;
+use App\Application\DTOs\BookLogs\Output\BookLogResponseDTO;
 use App\Domain\BookLog\Repositories\BookLogRepositoryInterface;
 use App\Domain\BookLog\Entities\BookLog;
 use App\Domain\BookLog\ValueObjects\BookTitle;
@@ -25,7 +26,7 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
         // Arrange
         $mockRepository = Mockery::mock(BookLogRepositoryInterface::class);
         $bookId = 'test-id';
-        $expectedBookLog = new BookLog(
+        $bookLogEntity = new BookLog(
             id: $bookId,
             title: new BookTitle('Clean Architecture'),
             author: 'Robert C. Martin',
@@ -39,7 +40,7 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
         $mockRepository->shouldReceive('findById')
             ->once()
             ->with($bookId)
-            ->andReturn($expectedBookLog);
+            ->andReturn($bookLogEntity);
 
         $interactor = new FindBookLogByIdQueryInteractor($mockRepository);
 
@@ -47,7 +48,12 @@ class FindBookLogByIdQueryInteractorTest extends TestCase
         $result = $interactor->execute($bookId);
 
         // Assert
-        $this->assertEquals($expectedBookLog, $result);
+        $this->assertInstanceOf(BookLogResponseDTO::class, $result);
+        $this->assertEquals($bookId, $result->id);
+        $this->assertEquals('Clean Architecture', $result->title);  // 文字列として直接アクセス
+        $this->assertEquals('Robert C. Martin', $result->author);
+        $this->assertEquals(8, $result->rating);                   // 整数として直接アクセス
+        $this->assertTrue($result->isHighRated());                 // ビジネスロジックのテスト
     }
 
     public function test_execute_returns_null_when_not_found()
